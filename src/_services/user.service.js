@@ -4,6 +4,8 @@ import { authHeader } from '../_helpers';
 export const userService = {
     login,
     logout,
+    otpVerification,
+    requestEmailVerification,
     register,
     getAll,
     getById,
@@ -11,22 +13,64 @@ export const userService = {
     delete: _delete
 };
 
-function login(username, password) {
+function login(phoneNumber) {
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ phoneNumber })
     };
-
-    return fetch(`${config.apiUrl}/users/authenticate`, requestOptions)
+    console.log("hello");
+    return fetch(`http://localhost:3000/users/phone`, requestOptions)
         .then(handleResponse)
         .then(user => {
             // store user details and jwt token in local storage to keep user logged in between page refreshes
             localStorage.setItem('user', JSON.stringify(user));
-
+            localStorage.setItem('phoneNumber', phoneNumber);
+            console.log("this is my user", localStorage.getItem('user'));
             return user;
         });
 }
+
+function otpVerification(otp) {
+    let user = JSON.parse(localStorage.getItem('user'));
+    let phoneNumber = JSON.parse(localStorage.getItem('phoneNumber'));
+    let data = {
+        "verificationCode": otp,
+        "phoneNumber": phoneNumber,
+        "token": user.token
+    }
+    console.log(JSON.stringify({ data }));
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data })
+    };
+    console.log("hello");
+    return fetch(`http://localhost:3000/users/phone/verify`, requestOptions)
+        .then(handleResponse)
+        .then(user => {
+            localStorage.setItem('isSuccessfulSignIn', user.isSuccessfulSignIn);
+            console.log(localStorage.getItem('isSuccessfulSignIn'));
+            return user;
+        });
+}
+
+function requestEmailVerification(data) {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data })
+    };
+    console.log("email verfi ", data);
+    return fetch(`http://localhost:3000/users/email`, requestOptions)
+        .then(handleResponse)
+        .then(user => {
+            console.log(user);
+            return user;
+        });
+}
+
+
 
 function logout() {
     // remove user from local storage to log user out
@@ -58,7 +102,9 @@ function register(user) {
         body: JSON.stringify(user)
     };
 
-    return fetch(`${config.apiUrl}/users/register`, requestOptions).then(handleResponse);
+    return fetch(`http://localhost:3000/users`, requestOptions).then(handleResponse).then(data => {
+        localStorage.setItem('email', user.email);
+    });
 }
 
 function update(user) {
@@ -91,10 +137,10 @@ function handleResponse(response) {
                 location.reload(true);
             }
 
-            const error = (data && data.message) || response.statusText;
+            const error = (data && data.errors) || response.statusText;
             return Promise.reject(error);
         }
-
+        console.log("This is the response ", data);
         return data;
     });
 }

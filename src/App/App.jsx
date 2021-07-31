@@ -7,6 +7,7 @@ import { alertActions } from '../_actions';
 import { PrivateRoute } from '../_components';
 import { HomePage } from '../HomePage';
 import { LoginPage } from '../LoginPage';
+import { VerifyOTP } from '../VerifyOTP';
 import { RegisterPage } from '../RegisterPage';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
                         <Switch>
                             <PrivateRoute exact path="/" component={HomePage} />
                             <Route path="/login" component={LoginPage} />
+                            <Route path="/verifyOTP" component={VerifyOTP} />
                             <Route path="/register" component={RegisterPage} />
                             <Redirect from="*" to="/" />
                         </Switch>

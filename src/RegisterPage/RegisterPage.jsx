@@ -8,8 +8,10 @@ function RegisterPage() {
     const [user, setUser] = useState({
         firstName: '',
         lastName: '',
-        username: '',
-        password: ''
+        email: '',
+        phoneNumber: '',
+        referredCodeKey: '',
+        agreeToPrivacyPolicy: false
     });
     const [submitted, setSubmitted] = useState(false);
     const registering = useSelector(state => state.registration.registering);
@@ -25,11 +27,18 @@ function RegisterPage() {
         setUser(user => ({ ...user, [name]: value }));
     }
 
+    function handleCheckChanged(e) {
+        let checked = false;
+        if(e.target.checked) checked = true;
+        setUser(user => ({ ...user, agreeToPrivacyPolicy: checked }));
+    }
+
     function handleSubmit(e) {
         e.preventDefault();
 
         setSubmitted(true);
-        if (user.firstName && user.lastName && user.username && user.password) {
+        if (user.firstName && user.lastName && user.email && user.phoneNumber) {
+            console.log(user);
             dispatch(userActions.register(user));
         }
     }
@@ -53,18 +62,26 @@ function RegisterPage() {
                     }
                 </div>
                 <div className="form-group">
-                    <label>Username</label>
-                    <input type="text" name="username" value={user.username} onChange={handleChange} className={'form-control' + (submitted && !user.username ? ' is-invalid' : '')} />
-                    {submitted && !user.username &&
-                        <div className="invalid-feedback">Username is required</div>
+                    <label>Email</label>
+                    <input type="text" name="email" value={user.email} onChange={handleChange} className={'form-control' + (submitted && !user.email ? ' is-invalid' : '')} />
+                    {submitted && !user.email &&
+                        <div className="invalid-feedback">email is required</div>
                     }
                 </div>
                 <div className="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" value={user.password} onChange={handleChange} className={'form-control' + (submitted && !user.password ? ' is-invalid' : '')} />
-                    {submitted && !user.password &&
-                        <div className="invalid-feedback">Password is required</div>
+                    <label>Phone Number</label>
+                    <input type="phoneNumber" name="phoneNumber" value={user.phoneNumber} onChange={handleChange} className={'form-control' + (submitted && !user.phoneNumber ? ' is-invalid' : '')} />
+                    {submitted && !user.phoneNumber &&
+                        <div className="invalid-feedback">phoneNumber is required</div>
                     }
+                </div>
+                <div className="form-group">
+                    <label>Referral Code</label>
+                    <input type="referredCodeKey" name="referredCodeKey" value={user.referredCodeKey} onChange={handleChange} className={'form-control'} />
+                </div>
+                <div className="form-group">
+                    <label>Agreement for Privacy Policy</label>
+                    <input type="checkbox" name="agreeToPrivacyPolicy" value={user.agreeToPrivacyPolicy} onChange={handleCheckChanged} className={'form-control'} />
                 </div>
                 <div className="form-group">
                     <button className="btn btn-primary">

@@ -10,7 +10,21 @@ module.exports = {
             {
                 test: /\.jsx?$/,
                 loader: 'babel-loader'
-            }
+            },
+            {
+                test: /\.css?$/,
+                include: __dirname + "./src/css",
+                exclude: __dirname + "./src/js",
+                use: [
+                    'style-loader',
+                    {
+                      loader: 'css-loader',
+                      options: {
+                        modules: true
+                      }
+                    }
+                  ]
+              }
         ]
     },
     plugins: [new HtmlWebpackPlugin({
